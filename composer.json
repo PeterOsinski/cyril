@@ -1,0 +1,17 @@
+{
+  "require": {
+      "pimple/pimple": "1.0.*@dev",
+      "symfony/debug": "2.3.*@dev",
+      "symfony/class-loader": "2.3.*@dev",
+      "symfony/routing": "2.3.*@dev",
+      "symfony/http-foundation": "2.3.*@dev",
+      "symfony/http-kernel": "2.3.*@dev",
+      "symfony/event-dispatcher": "2.3.*@dev",
+      "symfony/dependency-injection": "2.3.*@dev",
+      "twig/twig": "1.13.*@dev",
+      "doctrine/orm": "2.3.*@dev"
+  },
+	"autoload": {
+		"psr-0": { "Core": "src/", "Application": "src/" }
+	}
+}

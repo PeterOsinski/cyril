@@ -1,0 +1,14 @@
+{% extends 'Default/Layout.html.twig' %}
+
+{% block body -%}
+
+[hello, {{content}}]
+
+[{{text}}]
+[{{ hello()}}]
+[{{closure()}}]
+
+[{{render(route('index_component')) }}]
+
+
+{% endblock %}
