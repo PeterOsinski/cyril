@@ -29,6 +29,7 @@ class Route
     private $methods;
     private $schemes;
 
+    private $routeObj;
     /**
      * Constructor.
      *
@@ -49,13 +50,21 @@ class Route
             unset($data['value']);
         }
 
+        $this->routeObj = new \Symfony\Component\Routing\Route($this->getPath());
         foreach ($data as $key => $value) {
             $method = 'set'.str_replace('_', '', $key);
+            $methodR = 'set'.ucfirst(str_replace('_', '', $key));
             if (!method_exists($this, $method)) {
                 throw new \BadMethodCallException(sprintf("Unknown property '%s' on annotation '%s'.", $key, get_class($this)));
             }
+            if($methodR != 'setName')
+                $this->routeObj->$methodR($value);
             $this->$method($value);
         }
+    }
+    
+    public function getRouteObj(){
+        return $this->routeObj;
     }
 
     /**

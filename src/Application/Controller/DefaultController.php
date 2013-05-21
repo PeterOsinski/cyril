@@ -11,8 +11,7 @@ class DefaultController extends Controller
 {
 
     /**
-     * @Route("/kjhg", name="asd")
-     * @Route("/kjhg/2", name="asd2")
+     * @Route("/index", name="index")
      */
     public function indexAction(Request $request)
     {
@@ -40,6 +39,9 @@ class DefaultController extends Controller
         return $this->redirect('index');
     }
     
+    /**
+     * @Route("_proxy/index_component", name="index_component")
+     */
     public function index2Action(Request $request)
     {
         $content = 'to jest renderowany komponent';

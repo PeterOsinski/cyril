@@ -8,16 +8,19 @@ class Routes
 
     public function __construct()
     {
-        $routes = new \Core\Router();
+        $this->routes = new \Symfony\Component\Routing\RouteCollection();
         
-        $routes->add('/index', 'default::index');
-        $routes->add('/add-product', 'default::addProduct');
+//        $this->routes->add($name, new \Symfony\Component\Routing\Route(
+//                        $path,
+//                        array('_controller' => $this->baseControllerPath.$controller))
+//        );
         
-        $routes->add('/_proxy/index_component', 'index_component', 'DefaultController::index2Action');
-        
-        $this->routes = $routes;
+//        $this->routes = $routes;
     }
     
+    /**
+     * @return \Symfony\Component\Routing\RouteCollection
+     */
     public function getRoutes(){
         return $this->routes;
     }

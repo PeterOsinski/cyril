@@ -23,8 +23,6 @@ final class App {
         
         $this->setDirs();
         
-        $v = new Route\RouteAnnotationParser(\Application\Config\AppConfig::registerController());
-        $v->parseControllers();
         $this->registerRouting();
         
         $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
@@ -55,8 +53,12 @@ final class App {
     }
     
     private function registerRouting(){
+        $routeAnnotations = new Route\RouteAnnotationParser(\Application\Config\AppConfig::registerController());
+        $routeAnnotations->parseControllers();
+        
         $routes = new \Application\Config\Routes();
-        $routeCollection = $routes->getRoutes()->getRoutes();
+        $routeCollection = $routes->getRoutes();
+        $routeCollection->addCollection($routeAnnotations->getCollection());
         $this->container->setParameter('routes', $routeCollection);
     }
     

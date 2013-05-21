@@ -48,10 +48,10 @@ class DoctrineFactory {
         
         $conn = array(
             'driver' => 'pdo_pgsql',
-//            'user' => 'postgres',
-//            'password' => 'postgres',
-            'user'     => '2012',
-            'password' => 'galileo',
+            'user' => 'postgres',
+            'password' => 'postgres',
+//            'user'     => '2012',
+//            'password' => 'galileo',
             'dbname' => 'foo',
         );
         $em = EntityManager::create($conn, $config);
