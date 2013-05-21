@@ -9,15 +9,21 @@ use Doctrine\Common\Cache\ApcCache;
 class DoctrineFactory {
 
     protected $debug = false;
+    protected $cacheDir;
+    protected $entityDir;
+    
 
-    public function __construct($debug) {
+    public function __construct($debug, $cacheDir, $entityDir) {
         $this->debug = $debug;
+        //prod or dev?
+        $this->cacheDir = $cacheDir;
+        $this->entityDir = $entityDir;
     }
 
     public function get() {
-        $config = Setup::createAnnotationMetadataConfiguration(array(\Core\App::getRootDir().'/Application/Entity'), $this->debug);
+        $config = Setup::createAnnotationMetadataConfiguration(array($this->entityDir), $this->debug);
 
-        $proxyDir = \Core\App::getRootDir().'/Cache/doctrine';
+        $proxyDir = $this->cacheDir.'/../Doctrine';
         $config->setProxyDir($proxyDir);
         $config->setProxyNamespace('dc2_proxy');
 
@@ -42,10 +48,10 @@ class DoctrineFactory {
         
         $conn = array(
             'driver' => 'pdo_pgsql',
-            'user' => 'postgres',
-            'password' => 'postgres',
-//            'user'     => '2012',
-//            'password' => 'galileo',
+//            'user' => 'postgres',
+//            'password' => 'postgres',
+            'user'     => '2012',
+            'password' => 'galileo',
             'dbname' => 'foo',
         );
         $em = EntityManager::create($conn, $config);

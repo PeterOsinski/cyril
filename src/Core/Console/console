@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ ../../../vendor/bin/doctrine
+../../../vendor/bin/doctrine orm:generate-entities /var/www/sf2-bootstrap/source/src/Application/Entity
+../../../vendor/bin/doctrine orm:generate-entities /var/www/Piotr/bootstrap-framework/source/src/Application/Entity

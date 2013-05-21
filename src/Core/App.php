@@ -9,8 +9,13 @@ final class App {
     
     private $debug;
     private $container;
+    private $cacheDir;
     
-    public static function getRootDir(){
+//    public static function getRootDir(){
+//        return __DIR__.'/..';
+//    }
+    
+    public function getRootDir(){
         return __DIR__.'/..';
     }
     
@@ -59,9 +64,9 @@ final class App {
     private function registerTwig(){
         \Twig_Autoloader::register();
 
-        $loader = new \Twig_Loader_Filesystem($this->container->getParameter('root_dir').'/Application/View');
+        $loader = new \Twig_Loader_Filesystem($this->getRootDir().'/Application/View');
         $twig = new \Twig_Environment($loader, array(
-                    'cache' => $this->container->getParameter('cache_dir'),
+                    'cache' => $this->cacheDir.'/Twig',
                     'debug' => $this->debug
                 ));
         
@@ -70,18 +75,18 @@ final class App {
     
     private function registerDoctrine(){
         $definition = new Definition('Doctrine\ORM\EntityManager');
-       $definition->setFactoryClass(new Doctrine\DoctrineFactory($this->debug))
+       $definition->setFactoryClass(new Doctrine\DoctrineFactory($this->debug, $this->cacheDir, $this->getRootDir().'/Application/Entity'))
                ->setFactoryMethod('get');
        
        $this->container->setDefinition('doctrine', $definition);
     }
     
     private function setDirs(){
-        $this->container->setParameter('root_dir', self::getRootDir());
-        
+        $this->container->setParameter('root_dir', $this->getRootDir());
+
         $env = $this->debug ? 'dev' : 'prod';
-        $cacheDir = $this->container->getParameter('root_dir').'/Cache/'.$env;
-        $this->container->setParameter('cache_dir', $cacheDir);
+        $this->cacheDir = $this->container->getParameter('root_dir').'/Cache/'.$env;
+        $this->container->setParameter('cache_dir', $this->cacheDir);
     }
         
 }

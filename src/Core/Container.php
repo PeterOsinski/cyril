@@ -49,7 +49,7 @@ class Container
         
         //session
         $container->register('session.file_handler', 'Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler')
-                ->setArguments(array(__DIR__.'/../Cache/Session'));
+                ->setArguments(array('%cache_dir%'.'/Session'));
         $container->register('session.storage', 'Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage')
                 ->setArguments(array(array(), new Reference('session.file_handler')));
         /*

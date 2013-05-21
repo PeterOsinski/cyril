@@ -12,5 +12,4 @@ Debug::enable();
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-//Core\App::bootstrap(true);
 new Core\App(true);
