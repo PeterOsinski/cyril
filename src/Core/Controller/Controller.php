@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Controller extends ContainerAware
 {
+
     /**
      * @var \Core\FrameworkContainerBuilder
      */
@@ -37,35 +38,52 @@ class Controller extends ContainerAware
     {
         if (!$this->container->get('session')->isStarted())
             $this->container->get('session')->start();
-        
+
         return $this->container->get('request');
     }
-    
-    public function getUser(){
-        if($this->getRequest()->hasSession() 
-                && $this->getRequest()->getSession()->has('user')){
+
+    public function getUser()
+    {
+        if ($this->getRequest()->hasSession()
+                && $this->getRequest()->getSession()->has('user')) {
             return $this->getRequest()->getSession()->get('user');
+        } else {
+            return false;
+        }
+    }
+
+    public function setUser($user)
+    {
+        $this->getRequest()->getSession()->set('user', $user);
+    }
+    
+    public function isAuthenticated(){
+        if ($this->getRequest()->hasSession()
+                && $this->getRequest()->getSession()->has('is_authenticated')) {
+            return $this->getRequest()->getSession()->get('is_authenticated');
+        } else {
+            return false;
         }
     }
     
-    public function setUser($user){
-        if($this->getRequest()->hasSession() 
-                && !$this->getRequest()->getSession()->has('user')){
-            $this->getRequest()->getSession()->set('user', new \Core\Session\User($user));
-        }
+    public function setIsAuthenticated($bool){
+        if(is_bool($bool))
+            $this->getRequest()->getSession()->set('is_authenticated', $bool);
     }
-    
+
     /**
      * @return \Symfony\Component\EventDispatcher\EventDispatcher
      */
-    public function getEventDispatcher(){
+    public function getEventDispatcher()
+    {
         return $this->container->has('dispatcher') ? $this->container->get('dispatcher') : null;
     }
-    
+
     /**
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getDoctrine(){
+    public function getDoctrine()
+    {
         return $this->container->get('doctrine');
     }
 

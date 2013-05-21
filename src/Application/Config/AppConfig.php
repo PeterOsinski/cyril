@@ -14,6 +14,12 @@ class AppConfig{
         $this->container = $configurator->getContainer();
     }
     
+    public static function registerController(){
+        return array(
+          'DefaultController'  
+        );
+    }
+    
     public function load(){
         $this->configurator->addTwigExtension(new MyExtension($this->container));
         $this->configurator->addEventListener('indexEvent', array(new IndexListener(), 'onIndex'));

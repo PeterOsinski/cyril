@@ -11,10 +11,6 @@ final class App {
     private $container;
     private $cacheDir;
     
-//    public static function getRootDir(){
-//        return __DIR__.'/..';
-//    }
-    
     public function getRootDir(){
         return __DIR__.'/..';
     }
@@ -27,6 +23,8 @@ final class App {
         
         $this->setDirs();
         
+        $v = new Route\RouteAnnotationParser(\Application\Config\AppConfig::registerController());
+        $v->parseControllers();
         $this->registerRouting();
         
         $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
@@ -38,6 +36,7 @@ final class App {
         $this->registerDoctrine();
         
         $response = $this->container->get('framework')->handle($request);
+        
         $response->send();
         $this->container->get('framework')->terminate($this->container->get('request'), $response);
     }
