@@ -14,8 +14,8 @@ class Configurator
     }
     
     public function addTwigExtension(\Twig_ExtensionInterface $extension){
-        if($this->container->hasParameter('twig'))
-            $this->container->getParameter('twig')->addExtension($extension);
+        if($this->container->has('twig'))
+            $this->container->get('twig')->addExtension($extension);
     }
     
     public function addEventListener($eventName, $listener){

@@ -17,8 +17,8 @@ class RouteAnnotationParser {
 
     public function parseControllers() {
         $this->collection = new \Symfony\Component\Routing\RouteCollection();
-        foreach ($this->controllers as $controller) {
-            $controllerNamespace = 'Application\Controller\\' . $controller;
+        foreach ($this->controllers as $controllerNamespace) {
+//            $controllerNamespace = 'Application\Controller\\' . $controller;
             $reader = new \Doctrine\Common\Annotations\AnnotationReader($controllerNamespace);
             $reflection = new \ReflectionClass($controllerNamespace);
 

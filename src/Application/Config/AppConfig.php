@@ -16,7 +16,7 @@ class AppConfig{
     
     public static function registerController(){
         return array(
-          'DefaultController'  
+          'Application\Controller\DefaultController'  
         );
     }
     

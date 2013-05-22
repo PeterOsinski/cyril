@@ -10,9 +10,9 @@ class AppConfig
         $handler = new \Symfony\Component\HttpKernel\Fragment\FragmentHandler(array($renderer));
         $handler->setRequest($container->get('request'));
         
-        $container->getParameter('twig')->addExtension(new Twig\HttpKernelExtension($handler));
+        $container->get('twig')->addExtension(new Twig\HttpKernelExtension($handler));
         
-        $container->getParameter('twig')->addExtension(new Twig\RoutingExtension($container->get('url_generator')));
+        $container->get('twig')->addExtension(new Twig\RoutingExtension($container->get('url_generator')));
     }
 }
 

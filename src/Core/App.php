@@ -18,16 +18,17 @@ final class App {
     public function __construct($debug = false){
         $this->debug = $debug;
         
+        //load default components
         $builder = new Container($this->debug);
         $this->container = $builder->getContainer();
         
         $this->setDirs();
-        
         $this->registerRouting();
         
         $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-        $this->container->register('request', $request);
+        $this->container->set('request', $request);
         
+        $this->registerSession();
         $this->registerTwig();
         $this->loadPrimaryConfig();
         $this->loadAppConfig();
@@ -37,6 +38,16 @@ final class App {
         
         $response->send();
         $this->container->get('framework')->terminate($this->container->get('request'), $response);
+    }
+    
+    private function registerSession()
+    {
+        $this->container->register('session.file_handler', 'Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler')
+                ->setArguments(array('%cache_dir%' . '/Session'));
+        $this->container->register('session.storage', 'Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage')
+                ->setArguments(array(array(), new \Symfony\Component\DependencyInjection\Reference('session.file_handler')));
+        $this->container->set('session', new \Symfony\Component\HttpFoundation\Session\Session($this->container->get('session.storage')));
+        $this->container->get('request')->setSession($this->container->get('session'));
     }
     
     private function loadPrimaryConfig(){
@@ -53,13 +64,19 @@ final class App {
     }
     
     private function registerRouting(){
-        $routeAnnotations = new Route\RouteAnnotationParser(\Application\Config\AppConfig::registerController());
+        $registeredControllers = \Application\Config\AppConfig::registerController();
+        
+        //register special controller that has routes for debug panel;
+        if($this->debug)
+            $registeredControllers[] = 'Core\Controller\DebugController';
+        
+        $routeAnnotations = new Route\RouteAnnotationParser($registeredControllers);
         $routeAnnotations->parseControllers();
         
         $routes = new \Application\Config\Routes();
         $routeCollection = $routes->getRoutes();
         $routeCollection->addCollection($routeAnnotations->getCollection());
-        $this->container->setParameter('routes', $routeCollection);
+        $this->container->set('routes', $routeCollection);
     }
     
     private function registerTwig(){
@@ -71,7 +88,7 @@ final class App {
                     'debug' => $this->debug
                 ));
         
-        $this->container->setParameter('twig', $twig);
+        $this->container->set('twig', $twig);
     }
     
     private function registerDoctrine(){

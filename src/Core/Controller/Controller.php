@@ -6,11 +6,10 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpFoundation\Request;
 
 class Controller extends ContainerAware
 {
-
+    
     /**
      * @var \Core\FrameworkContainerBuilder
      */
@@ -42,6 +41,9 @@ class Controller extends ContainerAware
         return $this->container->get('request');
     }
 
+    /**
+     * Fetches user object from session
+     */
     public function getUser()
     {
         if ($this->getRequest()->hasSession()
@@ -52,11 +54,21 @@ class Controller extends ContainerAware
         }
     }
 
+    /**
+     * Sets user object in session
+     */
     public function setUser($user)
     {
         $this->getRequest()->getSession()->set('user', $user);
     }
     
+    public function unsetUser(){
+        $this->getRequest()->getSession()->remove('user');
+    }
+    
+    /**
+     * Checks if user is authenticated
+     */
     public function isAuthenticated(){
         if ($this->getRequest()->hasSession()
                 && $this->getRequest()->getSession()->has('is_authenticated')) {
@@ -66,9 +78,39 @@ class Controller extends ContainerAware
         }
     }
     
+    /**
+     * Sets user authentication
+     */
     public function setIsAuthenticated($bool){
         if(is_bool($bool))
             $this->getRequest()->getSession()->set('is_authenticated', $bool);
+    }
+    
+    /**
+     * Sets user roles
+     */
+    public function setUserRoles(array $roles){
+        $this->getRequest()->getSession()->set('user_roles', $roles);
+    }
+    
+    /**
+     * Get authenticated user roles
+     */
+    public function getUserRoles(){
+        $session = $this->getRequest()->getSession();
+        
+        if(!$session->has('user'))
+            throw new \Exception('There is no user object in session, set it first then authenticate the user!');
+        if(!$session->has('is_authenticated') || 
+                ($session->has('is_authenticated') && !$session->get('is_authenticated')))
+            throw new \Exception('User is not authenticated!');
+        
+        if ($this->getRequest()->hasSession()
+                && $this->getRequest()->getSession()->has('user_roles')) {
+            return $this->getRequest()->getSession()->get('user_roles');
+        }else{
+            return false;
+        }
     }
 
     /**

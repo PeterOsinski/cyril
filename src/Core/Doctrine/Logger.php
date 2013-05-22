@@ -18,23 +18,32 @@ class Logger implements SQLLogger
             'params' => $params,
             'time' => microtime(true)
         );
+        
     }
  
     public function stopQuery()
     {
+        
         $lastKey = key(array_slice($this->queries, -1, 1, TRUE));
  
         $sqlDuration = microtime(true) - $this->queries[$lastKey]['time'];
  
-        $this->queries[$lastKey]['time'] = $sqlDuration;
+        $this->queries[$lastKey]['time'] = (round($sqlDuration, 5) * 1000).' ms';
         
         $this->count++;
         $this->totalTime += $sqlDuration;
-        $this->totalTime = round($this->totalTime, 5).' s';
+        $this->totalTime = round($this->totalTime, 5);
     }
     
-    public function getWebLog(){
-        return '<div style="position:absolute; bottom: 10px">('.$this->count.') '.$this->totalTime.'</div>';
+    public function getMiniLog(){
+        return array(
+            'totalTime'=>($this->totalTime * 1000).' ms',
+            'count'=>$this->count
+        );
+    }
+    
+    public function getFullLog(){
+        return $this->queries;
     }
     
 }

@@ -17,23 +17,27 @@ class DefaultController extends Controller
     {
         $content = 'index!';
         
-        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')->findAll();
-        
-//        $this->getRequest()->getSession()->set('sa', 'pa');
+        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')->findBy(array('id'=>array(1,2)));
+        $products2 = $this->getDoctrine()->getRepository('\Application\Entity\Product')->find(3);
+//        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')->findAll();
         
         $event = new \Application\Event\IndexEvent('Event odpalany przez listener');
         $this->getEventDispatcher()->dispatch('indexEvent', $event);
-
-        return compact('content');
+        return compact('content', 'products');
     }
     
+    /**
+     * @Route("/add", name="add_product")
+     */
     public function addProductAction(){
-        
-        $product = new Product();
-        $product->setName('Produkt'. uniqid());
-        
         $em = $this->getDoctrine();
-        $em->persist($product);
+        
+        for($i = 0; $i<=1;$i++){
+            $product = new Product();
+            $product->setName('Produkt'. uniqid());
+
+            $em->persist($product);
+        }
         $em->flush();
         
         return $this->redirect('index');

@@ -53,7 +53,7 @@ class RoutingExtension extends \Twig_Extension
     
     public function getRoute($name, $parameters = array())
     {
-        return '/'.$this->generator->generate($name, $parameters, UrlGeneratorInterface::RELATIVE_PATH);
+        return $this->generator->generate($name, $parameters, UrlGeneratorInterface::ABSOLUTE_PATH);
     }
 
     /**

@@ -3,11 +3,20 @@
 {% block body -%}
 
 [hello, {{content}}]
+<br/>
+<br/>
+<ul>
+    {% for product in products %}
+        <li>{{product.id}} - {{product.name}}</li>
+    {% endfor %}
+</ul>
+<br/>
+<br/>
 
+[{{path('index')}}]
 [{{text}}]
 [{{ hello()}}]
 [{{closure()}}]
-
 [{{render(route('index_component')) }}]
 
 
