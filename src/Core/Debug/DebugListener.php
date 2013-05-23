@@ -39,7 +39,6 @@ class DebugListener implements EventSubscriberInterface
             $this->toolbar->addWindow($this->getSession(), 'cyril-session');
             
             $this->appendToolbar($filterResponseEvent);
-            $this->getSession();
         }
     }
     
