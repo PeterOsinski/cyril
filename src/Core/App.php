@@ -11,6 +11,10 @@ use Symfony\Component\HttpFoundation\Session\Session;
 final class App {
     
     private $debug;
+    
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerBuilder
+     */
     private $container;
     private $cacheDir;
     
@@ -26,6 +30,7 @@ final class App {
         $this->container = $builder->getContainer();
         
         $this->setDirs();
+        $this->registerCache();
         $this->registerRouting();
         
         $request = Request::createFromGlobals();
@@ -41,6 +46,10 @@ final class App {
         
         $response->send();
         $this->container->get('framework')->terminate($this->container->get('request'), $response);
+    }
+    
+    private function registerCache(){
+        $this->container->register('cache', '\Doctrine\Common\Cache\ApcCache');
     }
     
     private function registerSession()
@@ -75,12 +84,23 @@ final class App {
         if($this->debug)
             $registeredControllers[] = 'Core\Controller\DebugController';
         
-        $routeAnnotations = new Route\RouteAnnotationParser($registeredControllers);
-        $routeAnnotations->parseControllers();
+        //test ab -n 500 -c 10
+        //without cached routes: 65 req/sec
+        //with cached routes: 80 req/sec
+        $cache = $this->container->get('cache');
+        $cacheKey = 'pofm::routes_annotations';
+        if(!$this->debug && !$cache->contains($cacheKey) || $this->debug){
+            $routeAnnotations = new Route\RouteAnnotationParser($registeredControllers);
+            $routeAnnotations->parseControllers();
         
-        $routes = new \Application\Config\Routes();
-        $routeCollection = $routes->getRoutes();
-        $routeCollection->addCollection($routeAnnotations->getCollection());
+            $routes = new \Application\Config\Routes();
+            $routeCollection = $routes->getRoutes();
+            $routeCollection->addCollection($routeAnnotations->getCollection());
+            if(!$this->debug)
+                $cache->save($cacheKey, $routeCollection);
+        }else
+            $routeCollection = $cache->fetch($cacheKey);
+
         $this->container->set('routes', $routeCollection);
     }
     

@@ -8,9 +8,11 @@ class DebugToolbar
     protected $windows = array();
     
     public function addWidget($widget, $width = false, $onClickShow = ''){
-        $width = $width ? 'min-width:'.$width.'px;':null;
-        $onClickShow = $onClickShow ? 'data-show="'.$onClickShow.'"':null;
-        $this->widgets[] = '<div '.$onClickShow.' class="cyril-widget" style="'.$width.'">'.$widget.'</div>';
+        if($widget){
+            $width = $width ? 'min-width:'.$width.'px;':null;
+            $onClickShow = $onClickShow ? 'data-show="'.$onClickShow.'"':null;
+            $this->widgets[] = '<div '.$onClickShow.' class="cyril-widget" style="'.$width.'">'.$widget.'</div>';
+        }
     }
     
     public function addWindow($window, $id){

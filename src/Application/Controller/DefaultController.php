@@ -17,10 +17,19 @@ class DefaultController extends Controller
     {
         $content = 'index!';
 
+//        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')
+//                        ->findBy(array('id'=>array(1,2)));
+//        $products2 = $this->getDoctrine()->getRepository('\Application\Entity\Product')
+//                        ->find(3);
         $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')
-                        ->findBy(array('id'=>array(1,2)));
-        $products2 = $this->getDoctrine()->getRepository('\Application\Entity\Product')
-                        ->find(3);
+                ->createQueryBuilder('a')
+                ->where('a.id = 2')
+                ->getQuery()
+                ->useQueryCache(true, 100, '123')
+                ->setResultCacheId('')
+                ->getResult();
+        
+        
 //        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')->findAll();
 //        $this->setUser(new \stdClass());
 

@@ -18,7 +18,7 @@ class DebugController extends Controller
         // :) hihi
         exit;
     }
-
+    
     /**
      * @Route("/_debug/cc/dev", name="debug_cc_dev", defaults={"env"="dev"})
      * @Route("/_debug/cc/prod", name="debug_cc_prod", defaults={"env"="prod"})

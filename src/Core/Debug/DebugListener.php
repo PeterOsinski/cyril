@@ -29,6 +29,7 @@ class DebugListener implements EventSubscriberInterface
             $this->toolbar->addWidget($this->getTotalTime(), 100);
             $this->toolbar->addWidget($this->getMiniSQLLogger($filterResponseEvent), 100, 'cyril-full-sql');
             $this->toolbar->addWidget($this->getUserParams(), null, 'cyril-session');
+            $this->toolbar->addWidget($this->getCache());
             $this->toolbar->addWidget($this->getMemoryPeakUsage(), 80);
             $this->toolbar->addWidget($this->getPhpVersion());
             $this->toolbar->addWidget($this->getController());
@@ -92,7 +93,15 @@ class DebugListener implements EventSubscriberInterface
     private function getTotalTime(){
         return 'T: '.(round(microtime(true) - $this->startTime, 5)*1000).' ms';
     }
-
+    
+    private function getCache(){
+        if($this->container->has('cache')){
+            $cacheClass = explode('\\', get_class($this->container->get('cache')));
+            return '<a href="/apc.php">'.array_pop($cacheClass).'</a>';
+        }else
+            return false;
+    }
+    
     private function getUserParams()
     {
         $session = $this->container->get('request')->getSession();
