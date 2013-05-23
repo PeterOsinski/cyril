@@ -1,6 +1,6 @@
 <?php
 
-namespace Core\Listener;
+namespace Core\Debug;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
@@ -28,13 +28,17 @@ class DebugListener implements EventSubscriberInterface
         if ($filterResponseEvent->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
             $this->toolbar->addWidget($this->getTotalTime(), 100);
             $this->toolbar->addWidget($this->getMiniSQLLogger($filterResponseEvent), 100, 'cyril-full-sql');
-            $this->toolbar->addWidget($this->getUserParams());
+            $this->toolbar->addWidget($this->getUserParams(), null, 'cyril-session');
             $this->toolbar->addWidget($this->getMemoryPeakUsage(), 80);
             $this->toolbar->addWidget($this->getPhpVersion());
             $this->toolbar->addWidget($this->getController());
             $this->toolbar->addWidget($this->getClearCache());
+            
             $this->toolbar->addWindow($this->getFullSQLLogger(), 'cyril-full-sql');
+            $this->toolbar->addWindow($this->getSession(), 'cyril-session');
+            
             $this->appendToolbar($filterResponseEvent);
+            $this->getSession();
         }
     }
     
@@ -42,6 +46,25 @@ class DebugListener implements EventSubscriberInterface
         if ($getResponseEvent->getRequestType() == HttpKernelInterface::MASTER_REQUEST) {
             $this->startTime = microtime(true);
         }
+    }
+    
+    private function getSession(){
+        $sessionParams = $this->container->get('session')->all();
+        $output = '<ul class="cyril-session-list">';
+        
+        foreach($sessionParams as $name => $value){
+            $val = is_object($value) ? get_class($value).' '.json_encode($value) : json_encode($value);
+            
+            $output .= '
+                <li>
+                    <span class="cyril-session-name">'.$name.': </span>
+                    <span class="cyril-session-value">'.$val.'</span>
+                </li>
+                    ';
+        }
+        
+        $output .= '</ul>';
+        return $output;        
     }
     
     private function getClearCache(){
@@ -72,13 +95,9 @@ class DebugListener implements EventSubscriberInterface
 
     private function getUserParams()
     {
-        $user = 'red';
-        $isAuthenticated = 'red';
-        if ($this->container->get('request')->hasSession()) {
-            $session = $this->container->get('request')->getSession();
-            $user = $session->has('user') ? 'green' : 'red';
-            $isAuthenticated = $session->has('is_authenticated') ? $session->get('is_authenticated') ? 'green' : 'red' : 'red';
-        }
+        $session = $this->container->get('request')->getSession();
+        $user = $session->get('user') !== null ? 'green' : 'red';
+        $isAuthenticated = $session->get('is_authenticated') ? 'green' : 'red';
         return '<span class="cyril-session cyril-'.$user.'">Usr</span> <span class="cyril-session cyril-'.$isAuthenticated.'">Auth</span>';
     }
     

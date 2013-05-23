@@ -4,8 +4,8 @@ namespace Core\Debug;
 
 class DebugToolbar
 {
-    protected $widgets;
-    protected $windows;
+    protected $widgets = array();
+    protected $windows = array();
     
     public function addWidget($widget, $width = false, $onClickShow = ''){
         $width = $width ? 'min-width:'.$width.'px;':null;
@@ -29,7 +29,7 @@ class DebugToolbar
 
         $windows = implode('', $this->windows);
 
-        return $windows . $this->getStyles(). $container . $this->getJs();
+        return $this->getStyles(). $windows . $container . $this->getJs();
     }
     
     public function getJs(){
@@ -53,7 +53,10 @@ class DebugToolbar
                 el[index].addEventListener('click', function(){
                     if(this.hasAttribute('data-show')){
                         var el = document.getElementById(this.getAttribute('data-show'));
-                        el.style.display = 'block';
+                        if(el.style.display != 'none')
+                            el.style.display = 'none';
+                        else
+                            el.style.display = 'block';
                         window.scrollTo(0);
                     }
                 }, false);
@@ -84,6 +87,10 @@ class DebugToolbar
                 padding: 5px; 
                 border-left:1px solid rgba(0,0,0,.4); 
                 box-shadow: -1px 0px 0 rgba(255,255,255,.9);
+            }
+            
+            .cyril-debug .cyril-widget[data-show]{
+                cursor: pointer;
             }
 
             .cyril-debug .cyril-widget:first-child{
@@ -149,6 +156,19 @@ class DebugToolbar
             
             .cyril-window{
                 float: left;
+            }
+            
+            .cyril-session-list{
+                list-style: none;
+                font-size: 14px;
+            }
+            
+            .cyril-session-list li{
+                margin: 10px 0;
+            }
+            
+            .cyril-session-list li span.cyril-session-name{
+                font-weight: 800;
             }
             </style>';
     }

@@ -8,6 +8,7 @@ class Configurator
      * @var \Symfony\Component\DependencyInjection\ContainerBuilder
      */
     protected $container;
+    protected $dbParams;
     
     public function __construct($container){
         $this->container = $container;
@@ -21,6 +22,10 @@ class Configurator
     public function addEventListener($eventName, $listener){
         if($this->container->has('dispatcher'))
             $this->container->get('dispatcher')->addListener($eventName, $listener);
+    }
+    
+    public function setDBParameters(array $params){
+        $this->container->setParameter('db_params', $params);
     }
     
     /**

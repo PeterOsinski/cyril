@@ -16,11 +16,14 @@ class DefaultController extends Controller
     public function indexAction(Request $request)
     {
         $content = 'index!';
-        
-        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')->findBy(array('id'=>array(1,2)));
-        $products2 = $this->getDoctrine()->getRepository('\Application\Entity\Product')->find(3);
+
+        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')
+                        ->findBy(array('id'=>array(1,2)));
+        $products2 = $this->getDoctrine()->getRepository('\Application\Entity\Product')
+                        ->find(3);
 //        $products = $this->getDoctrine()->getRepository('\Application\Entity\Product')->findAll();
-        
+//        $this->setUser(new \stdClass());
+
         $event = new \Application\Event\IndexEvent('Event odpalany przez listener');
         $this->getEventDispatcher()->dispatch('indexEvent', $event);
         return compact('content', 'products');

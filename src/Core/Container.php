@@ -41,7 +41,7 @@ class Container
                 ->setArguments(array(new Reference('twig'), new Reference('matcher')));
         
         if($container->getParameter('debug')){
-            $container->register('listener.debug', 'Core\Listener\DebugListener')
+            $container->register('listener.debug', 'Core\Debug\DebugListener')
                 ->addArgument($container);
             $container->getDefinition('dispatcher')
                 ->addMethodCall('addSubscriber', array(new Reference('listener.debug')));

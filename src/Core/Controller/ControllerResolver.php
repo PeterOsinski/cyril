@@ -34,6 +34,15 @@ class ControllerResolver extends BaseControllerResolver
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        
+        
+        $session = $this->container->get('session');
+        if(!$session->has('user'))
+            $session->set('user', null);
+
+        if(!$session->has('is_authenticated'))
+            $session->set('is_authenticated', false);
+        
     }
 
     /**

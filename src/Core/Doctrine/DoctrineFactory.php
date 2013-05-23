@@ -12,13 +12,15 @@ class DoctrineFactory {
     protected $debug = false;
     protected $cacheDir;
     protected $entityDir;
+    protected $dbParams;
     
 
-    public function __construct($debug, $cacheDir, $entityDir) {
+    public function __construct($debug, $cacheDir, $entityDir, $dbParams) {
         $this->debug = $debug;
         //prod or dev?
         $this->cacheDir = $cacheDir;
         $this->entityDir = $entityDir;
+        $this->dbParams = $dbParams;
     }
 
     public function get() {
@@ -47,15 +49,7 @@ class DoctrineFactory {
             $config->setAutoGenerateProxyClasses(true);
         }
         
-        $conn = array(
-            'driver' => 'pdo_pgsql',
-//            'user' => 'postgres',
-//            'password' => 'postgres',
-            'user'     => '2012',
-            'password' => 'galileo',
-            'dbname' => 'foo',
-        );
-        $em = EntityManager::create($conn, $config);
+        $em = EntityManager::create($this->dbParams, $config);
 
         return $em;
     }

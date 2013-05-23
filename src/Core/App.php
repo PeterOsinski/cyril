@@ -4,6 +4,9 @@ namespace Core;
 
 
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 final class App {
     
@@ -25,7 +28,7 @@ final class App {
         $this->setDirs();
         $this->registerRouting();
         
-        $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+        $request = Request::createFromGlobals();
         $this->container->set('request', $request);
         
         $this->registerSession();
@@ -42,25 +45,27 @@ final class App {
     
     private function registerSession()
     {
-        $this->container->register('session.file_handler', 'Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler')
+        $fileHandler = 'Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler';
+        $sessionStorage = 'Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage';
+        
+        $this->container->register('session.file_handler', $fileHandler)
                 ->setArguments(array('%cache_dir%' . '/Session'));
-        $this->container->register('session.storage', 'Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage')
-                ->setArguments(array(array(), new \Symfony\Component\DependencyInjection\Reference('session.file_handler')));
-        $this->container->set('session', new \Symfony\Component\HttpFoundation\Session\Session($this->container->get('session.storage')));
+        $this->container->register('session.storage', $sessionStorage)
+                ->setArguments(array(array(), new Reference('session.file_handler')));
+        $this->container->set('session', new Session($this->container->get('session.storage')));
+        //attach session to current request
         $this->container->get('request')->setSession($this->container->get('session'));
     }
     
     private function loadPrimaryConfig(){
-        //register core config, session, basic listeners and twig extensions
+        //register core config, basic listeners and twig extensions
         AppConfig::setConfig($this->container);
     }
     
     private function loadAppConfig(){
         //register user app config
-        if(class_exists('\Application\Config\AppConfig')){
-            $userConfig = new \Application\Config\AppConfig(new Configurator($this->container));
-            $userConfig->load();
-        }
+        $userConfig = new \Application\Config\AppConfig(new Configurator($this->container));
+        $userConfig->load();
     }
     
     private function registerRouting(){
@@ -91,12 +96,16 @@ final class App {
         $this->container->set('twig', $twig);
     }
     
-    private function registerDoctrine(){
+    private function registerDoctrine() {
         $definition = new Definition('Doctrine\ORM\EntityManager');
-       $definition->setFactoryClass(new Doctrine\DoctrineFactory($this->debug, $this->cacheDir, $this->getRootDir().'/Application/Entity'))
-               ->setFactoryMethod('get');
-       
-       $this->container->setDefinition('doctrine', $definition);
+        $entityDir = $this->getRootDir() . '/Application/Entity';
+        $dbParams = $this->container->getParameter('db_params');
+        
+        $factory = new Doctrine\DoctrineFactory($this->debug, $this->cacheDir, $entityDir, $dbParams);
+        $definition->setFactoryClass($factory)
+                ->setFactoryMethod('get');
+
+        $this->container->setDefinition('doctrine', $definition);
     }
     
     private function setDirs(){

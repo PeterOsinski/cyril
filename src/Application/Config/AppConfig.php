@@ -21,6 +21,15 @@ class AppConfig{
     }
     
     public function load(){
+        $this->configurator->setDBParameters(array(
+            'driver' => 'pdo_pgsql',
+            'user' => 'postgres',
+            'password' => 'postgres',
+//            'user'     => '2012',
+//            'password' => 'galileo',
+            'dbname' => 'foo',
+        ));
+        
         $this->configurator->addTwigExtension(new MyExtension($this->container));
         $this->configurator->addEventListener('indexEvent', array(new IndexListener(), 'onIndex'));
     }
