@@ -26,16 +26,16 @@ class DebugToolbar
     public function renderToolbar()
     {
         $container = '<div class="cyril-debug">' .
-                implode('', $this->widgets)
+                preg_replace('/\n/','',implode('', $this->widgets))
                 . $this->getCloseButton() . '</div>';
 
-        $windows = implode('', $this->windows);
+        $windows = preg_replace('/\n/','',implode('', $this->windows));
 
         return $this->getStyles(). $windows . $container . $this->getJs();
     }
     
     public function getJs(){
-        return 
+        $styles = 
         "
             <script>
             //hiding
@@ -65,10 +65,12 @@ class DebugToolbar
             }
             </script>
         ";
+        
+        return $styles;
     }
     
     public function getStyles(){
-        return
+        $styles =  
         '<style>
             .cyril-debug{
                 position:fixed; 
@@ -173,6 +175,8 @@ class DebugToolbar
                 font-weight: 800;
             }
             </style>';
+        
+        return preg_replace('/\n/', '', $styles);
     }
 }
 

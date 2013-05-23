@@ -36,6 +36,10 @@ class DefaultController extends Controller
         $event = new \Application\Event\IndexEvent('Event odpalany przez listener');
         $this->getEventDispatcher()->dispatch('indexEvent', $event);
         return compact('content', 'products');
+        
+//        $r = new \Symfony\Component\HttpFoundation\Response($content);
+//        $r->headers->set('Content-Type', 'application/json');
+//        return $r;
     }
     
     /**

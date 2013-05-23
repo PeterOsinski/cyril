@@ -147,12 +147,18 @@ class DebugListener implements EventSubscriberInterface
     private function appendToolbar(FilterResponseEvent $filterResponseEvent)
     {
         $response = $filterResponseEvent->getResponse();
-        $content = $response->getContent();
+        
+        /*
+         * think about it for a second, maybe its an ajax request?
+         */
+        if($response->headers->get('Content-Type') != 'application/json'){
+            $content = $response->getContent();
 
-        $content .= $this->toolbar->renderToolbar();
+            $content .= $this->toolbar->renderToolbar();
 
-        $response->setContent($content);
-        $filterResponseEvent->setResponse($response);
+            $response->setContent($content);
+            $filterResponseEvent->setResponse($response);
+        }
     }
 
     public static function getSubscribedEvents()

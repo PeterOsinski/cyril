@@ -26,7 +26,9 @@ class ResponseListener implements EventSubscriberInterface {
         if (is_array($response) && $matchedRoute) {
             $templatePath = $this->extractPathForTemplate($matchedRoute);
             $content = $this->twig->render($templatePath, $response);
-            $event->setResponse(new Response($content));
+            $response = new Response($content);
+            $response->headers->set('Content-Type', 'text/html');
+            $event->setResponse($response);
         }
     }
     

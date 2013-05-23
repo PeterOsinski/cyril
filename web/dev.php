@@ -1,5 +1,8 @@
 <?php
 
+if(!in_array($_SERVER['REMOTE_ADDR'], array('127.0.0.1')))
+        die('What is the meaning?');
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Symfony\Component\Debug\Debug;
